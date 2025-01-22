@@ -29,7 +29,7 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Traffic source" />
+      <CardHeader title="Message source" />
       <CardContent>
         <Stack spacing={2}>
           <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />
@@ -60,7 +60,7 @@ function useChartOptions(labels: string[]): ApexOptions {
 
   return {
     chart: { background: 'transparent' },
-    colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.warning.main],
+    colors: ['#30ace3', '#e450ad', '#744e94'],
     dataLabels: { enabled: false },
     labels,
     legend: { show: false },

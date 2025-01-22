@@ -24,10 +24,14 @@ export function Logo({ color = 'dark', emblem, height = HEIGHT, width = WIDTH }:
   if (emblem) {
     url = color === 'light' ? '/assets/logo-emblem.svg' : '/assets/logo-emblem--dark.svg';
   } else {
-    url = color === 'light' ? '/assets/logo.svg' : '/assets/logo--dark.svg';
+    url = color === 'light' ? '/assets/tharapa_logo.png' : '/assets/logo--dark.svg';
   }
 
-  return <Box alt="logo" component="img" height={height} src={url} width={width} />;
+  return (
+    <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+      <Box alt="logo" component="img" height="120px" width="120px" src={url} />
+    </Box>
+  );
 }
 
 export interface DynamicLogoProps {
