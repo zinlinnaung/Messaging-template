@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Metadata } from 'next';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+import axios from 'axios';
 import dayjs from 'dayjs';
 
 import { config } from '@/config';
@@ -42,17 +43,37 @@ export default function Page(): React.JSX.Element {
   const rowsPerPage = 5;
   const router = useRouter();
 
-  const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
-
   // Dialog state management
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [campaignName, setCampaignName] = React.useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [campaignName, setCampaignName] = useState('');
   const [campaignDescription, setCampaignDescription] = React.useState('');
+  const [campaigns, setCampaigns] = useState([]); // Store campaigns dynamically
+  const [campaign, setCampaign] = useState({
+    id: null,
+    name: '',
+    description: '',
+  });
+  // const [page, setPage] = useState(0);
+  // const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  const fetchCampaigns = async () => {
+    try {
+      const response = await axios.get(process.env.NEXT_PUBLIC_VITE_SERVICE_BASE_URL + '/campaigns');
+      setCampaigns(response.data);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    }
+  };
+  const paginatedCustomers = applyPagination(campaigns, page, rowsPerPage);
 
   const handleDialogOpen = () => setOpenDialog(true);
   const handleDialogClose = () => setOpenDialog(false);
   const onEdit = (id: string) => {
-    router.push(`/dashboard/campaign/detail/${id}`);
+    router.push(`/dashboard/campaign/detail/${id}?tab=messenger`);
   };
 
   const handleSave = () => {
@@ -64,6 +85,37 @@ export default function Page(): React.JSX.Element {
     handleDialogClose();
   };
 
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
+    const { name, value } = e.target;
+    setCampaign((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveCampaign = async () => {
+    try {
+      const newCampaign = {
+        name: campaign.name,
+        description: campaign.description,
+      };
+
+      await axios.post(process.env.NEXT_PUBLIC_VITE_SERVICE_BASE_URL + '/campaigns/create', newCampaign);
+      fetchCampaigns();
+      setCampaign({ id: null, name: '', description: '' });
+      handleDialogClose();
+    } catch (error) {
+      console.error('Error saving campaign:', error);
+    }
+  };
+  const handleDeleteCampaign = async (id: any) => {
+    try {
+      await axios.delete(process.env.NEXT_PUBLIC_VITE_SERVICE_BASE_URL + `/campaigns/${id}`);
+      fetchCampaigns();
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+    }
+  };
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -91,11 +143,12 @@ export default function Page(): React.JSX.Element {
       <CustomersFilters />
       {/* <TextMessage onDelete={} botmessage='' /> */}
       <CustomersTable
-        count={paginatedCustomers.length}
+        count={campaigns.length}
         page={page}
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
         onEdit={onEdit}
+        onDelete={handleDeleteCampaign}
       />
 
       {/* Add Campaign Dialog */}
@@ -104,20 +157,22 @@ export default function Page(): React.JSX.Element {
         <DialogContent>
           <TextField
             label="Campaign Name"
+            name="name"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={campaignName}
-            onChange={(e) => setCampaignName(e.target.value)}
+            value={campaign.name}
+            onChange={handleInputChange}
             required
           />
           <TextField
             label="Campaign Description"
+            name="description"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={campaignDescription}
-            onChange={(e) => setCampaignDescription(e.target.value)}
+            value={campaign.description}
+            onChange={handleInputChange}
             required
             multiline
             rows={4}
@@ -127,7 +182,7 @@ export default function Page(): React.JSX.Element {
           <Button onClick={handleDialogClose} color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
+          <Button onClick={handleSaveCampaign} variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>

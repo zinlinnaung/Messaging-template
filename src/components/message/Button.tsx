@@ -1,4 +1,5 @@
-import { Close } from "@mui/icons-material";
+import React, { useState } from 'react';
+import { Close } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -9,10 +10,20 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import React, { useState } from "react";
+} from '@mui/material';
+import { Trash as TrashIcon } from '@phosphor-icons/react/dist/ssr';
 
-const ButtonComponent = ({
+interface ButtonComponentProps {
+  label: string;
+  setButtonName: (name: string) => void;
+  onDelete: () => void;
+  buttonAction: string;
+  setButtonAction: (action: string) => void;
+  url: string;
+  setUrl: (url: string) => void;
+}
+
+const ButtonComponent: React.FC<ButtonComponentProps> = ({
   label,
   setButtonName,
   onDelete,
@@ -25,31 +36,25 @@ const ButtonComponent = ({
     <>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-
-          buttonAction,
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
         }}
       >
         <Typography variant="h6">Button</Typography>
         <IconButton
           onClick={onDelete}
           sx={{
-            color: "red",
-            display: "flex",
-            alignSelf: "flex-end",
-            // backgroundColor: "rgba(0, 0, 0, 0.3)",
-            "&:hover": {
-              // backgroundColor: "rgba(0, 0, 0, 0.5)",
-            },
+            color: 'red',
+            display: 'flex',
+            alignSelf: 'flex-end',
           }}
         >
-          <Close />
+          <TrashIcon />
         </IconButton>
       </Box>
 
-      <Box sx={{ marginTop: 2, width: "100%" }}>
+      <Box sx={{ marginTop: 2, width: '100%' }}>
         <TextField
           label="Button Name"
           value={label}
@@ -59,11 +64,7 @@ const ButtonComponent = ({
         />
         <FormControl fullWidth sx={{ marginBottom: 2 }}>
           <InputLabel>Button Action</InputLabel>
-          <Select
-            value={buttonAction}
-            onChange={(e) => setButtonAction(e.target.value)}
-            label="Button Action"
-          >
+          <Select value={buttonAction} onChange={(e) => setButtonAction(e.target.value)} label="Button Action">
             <MenuItem value="openLink">Open Link</MenuItem>
             <MenuItem value="submitForm">Submit Form</MenuItem>
             {/* Add more button actions as needed */}
@@ -71,7 +72,7 @@ const ButtonComponent = ({
         </FormControl>
 
         {/* Conditionally render URL text box based on selected action */}
-        {(buttonAction === "openLink" || buttonAction === "submitForm") && (
+        {(buttonAction === 'openLink' || buttonAction === 'submitForm') && (
           <TextField
             label="URL"
             value={url}

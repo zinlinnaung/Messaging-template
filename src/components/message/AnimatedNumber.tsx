@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Typography } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 
-const AnimatedNumber = ({ targetNumber }) => {
-  const [count, setCount] = useState(0);
+interface AnimatedNumberProps {
+  targetNumber: number;
+}
+
+const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ targetNumber }) => {
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     // Function to animate towards the targetNumber
@@ -37,25 +41,20 @@ const AnimatedNumber = ({ targetNumber }) => {
       animate={{ y: 0 }} // Set the rotation to normal after flip
       initial={{ y: 0 }} // Start the element flipped downwards
       transition={{
-        type: "spring", // Use spring for smooth rotation
+        type: 'spring', // Use spring for smooth rotation
         stiffness: 300,
         damping: 20, // Controls the smoothness of the flip
         duration: 0.8, // Duration for the flip effect
       }}
       style={{
-        width: "100%",
-        fontSize: "4rem",
-        fontWeight: "bold",
-        color: "teal",
-        display: "inline-block",
+        width: '100%',
+        fontSize: '4rem',
+        fontWeight: 'bold',
+        color: 'teal',
+        display: 'inline-block',
       }}
     >
-      <Typography
-        variant="h4"
-        color="primary"
-        textAlign="center"
-        alignSelf={"center"}
-      >
+      <Typography variant="h4" color="secondary" textAlign="center" alignSelf={'center'}>
         {count}
       </Typography>
     </motion.div>
